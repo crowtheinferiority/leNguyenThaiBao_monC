@@ -1,0 +1,9 @@
+//Chuong trinh nay co su dung 1 bien
+#include <iostream>
+using namespace std;
+int main(){
+    int motConSo; //Khai báo biến chưa số
+    motConSo = 5; //Dua so vao bien chua so
+    cout << "Gia tri cua so trong bien la: " << motConSo ;
+return 0;
+}
