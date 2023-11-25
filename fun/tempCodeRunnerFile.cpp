@@ -51,7 +51,7 @@ string decodeMorseCode(const string& morseCode) {
             result += ' ';
         }
         else {
-            currentCharacter += c;  
+            currentCharacter += c;
         }
     }
     
