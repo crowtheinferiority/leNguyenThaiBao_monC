@@ -28,7 +28,7 @@ int main() {
     // Hiển thị bản báo cáo
     cout << fixed << setprecision(2); // Để hiển thị số thập phân với 2 chữ số
     cout << "Ty le lai suat la: " << rate * 100 << "%" << endl;
-    cout << "So lan gop lai suatla: " << timesCompounded << endl;
+    cout << "So lan gop lai suat la: " << timesCompounded << endl;
     cout << "So tien ban dau la: $ " << principal << endl;
     cout << "Lai suat la: $ " << interest << endl;
     cout << "So du sau cung trong tai khoan la: $ " << amount << endl;
