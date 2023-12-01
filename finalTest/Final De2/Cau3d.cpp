@@ -1,30 +1,27 @@
 // Mã nguồn được sửa ngay trong lớp Sin và khai báo trong hàm main có sự thay đổi như sau:
-Lớp Sin:
-class Sin:public Function {
+class Sin:public Function {  //class Sin  được kế thừa public từ function
     private:
     static Sin*instance;
     public:
-    Sin(){
-
+    Sin(){ // hàm tạo private để ngăntạo đối tượng từ bên ngoài
     }
     static Sin*getlnstance(){
-        if(instance == NULL){ // có thể sử dụng Nullptr;
+        if(instance == NULL){ //  nếu instance tạo giá trị thì sẽ cấp bộ nhớ cho sin
         instance = new Sin();}
     }
-    return instance;
+    return instance; // trả về instane
 }
 double value(double x) {
-    return sin(x);
+    return sin(x);// trả về kết quả của sin 
 }
 double Derive(double x) {
-    return cos(x);
-}
+    return cos(x); // trả về kết quả của cos
 }
 
-Ta phải khởi tạo con trỏ instance là 1 con trỏ rỗng
+//khởi tạo static member
 Sin* Sin:instance == NULL;
 
-Hàm main:
+//Hàm main
 int main (){
     double x = 3.14/6; // Pi/6
     Sin* s = Sin::getlnstance();

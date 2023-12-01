@@ -1,20 +1,22 @@
 // Tap tin PhanSo.h
 #ifndef _PhanSo_h
 #define _PhanSo_h
-#iclude <iostream>
+#include <iostream>
 using namespace std;
 
 class PhanSo {
-    private:
+private:
     int tu, mau;
-    public:
-    PhanSo();
-    PhanSo(int i, int m); constructor với tham số
-    friend ostream& operator << (ostream& out, const Phanso ps); // Toán tử xuất
-    Phanso operator + (const Phanso& ps); // Toán tử cộng số nguyên
-    Phanso operator + (int res);
-    Phanso& operator++(); // Toán tử tăng ++(tiền tố)
-    Phanso operator += (const Phanso& ps); // Toán tử cộng và gán +=
-    operator int () const; //Chuyển đổi từ phân số sang in
-};
+
+public:
+    PhanSo(); //contractor
+		PhanSo(const int&,const int&);
+		PhanSo operator+(const PhanSo&);
+		PhanSo operator+=(const PhanSo&);
+		PhanSo operator+(const int&);
+		PhanSo operator++(); // nap chong toan tu de thuc hien cac phep tinh cua phan so
+		operator int(int);
+		friend ostream& operator<<(ostream&, const PhanSo&); //lenh xuat ra man hinh, giong cout
+		~PhanSo();
+}
 #endif

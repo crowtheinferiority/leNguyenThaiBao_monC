@@ -1,109 +1,137 @@
 #include <iostream>
-#include <vector>
-#include <iomanip>
 using namespace std;
- 
-   class MayLoc {
-    protected:
-       float congSuat;
 
-       public:
-       MayLoc(float congSuat) : congSuat(congSuat) {}
-       virtual ~ MayLoc() {}
+class MayLyTam {
+private:
+    int luonxang;
+    double congsuat;
+    double thoigian;
 
-       virtual float tinhLuongNuoc() const = 0;
-       virtual float tinhChiPhi() const = 0;
-   };
-
-   class MayLyTam : public MayLoc {
-    private:
-     float tocDoHaoXang;
-     float thoiGianSuDung;
-     public:
-     MayLyTam(float congSuat, float tocDoHaoXang, float thoiGianSuDung):
-     MayLoc(congSuat), tocDoHaoXang(tocDoHaoXang), thoiGianSuDung(thoiGianSuDung) {}
-
-     float tinhLuongNuoc() const override {
-        return congSuat * thoiGianSuDung;
-     }
-
-     float tinhChiPhi() const override {
-        return tocDoHaoXang * 20000.0 + thoiGianSuDung * 50000.0;
-     }
-   };
-
-   class MayXucTac : public MayLoc {
-    private:
-    float luongHoaChat;
-    float thoiGianSuDung;
-
-    public:
-    MayXucTac(float congSuat, float luongHoaChat, float thoiGianSuDung) : MayLoc(congSuat), luongHoaChat(luongHoaChat), thoiGianSuDung(thoiGianSuDung) {}
-
-    float tinhLuongNuoc() const override {
-        float congSuatThatTe = congSuat;
-        if(thoiGianSuDung < 10) {
-            congSuatThatTe = congSuat * (luongHoaChat / 100); 
-        }else{
-            congSuatThatTe = congSuat * (luongHoaChat / 100) / (thoiGianSuDung / 10);
-     }
-     return congSuatThatTe * thoiGianSuDung;
+public:
+    void nhap() {
+        cout << "Nhap thoi gian hoat dong: ";
+        cin >> thoigian;
+        cout << "Nhap luong xang: ";
+        cin >> luonxang;
+        cout << "Nhap cong suat loc cua may: ";
+        cin >> congsuat;
     }
 
-    float tinhChiPhi() const override {
-        return thoiGianSuDung * 80000.0 + luongHoaChat * 10000.0;
+    void setTgian(double t) {
+        thoigian = t;
     }
-   };
 
-   int main (){
-    int N; // So may loc
-    cout << "Nhap so may loc:";
-    cin >> N;
+    double getThoiGian() {
+        return this->thoigian;
+    }
 
-    vector<MayLoc*> danhSachMayLoc;
+    static long long DON_GIA_THUE_MayLyTam;
+    
+    float tinhLuongNuoc() {
+        return this->getThoiGian() * congsuat;
+    }
 
-    for (int i = 0; i < N; i++) {
-        int loaiMay;
-        float congSuat, luongHoaChat, thoiGianSuDung, tocDoHaoXang;
+    long tinhChiPhiThueMoiMay() {
+        return DON_GIA_THUE_MayLyTam * static_cast<long>(this->getThoiGian());
+    }
 
-        cout << "Nhap loai may (1 - May Ly TAm, 2 - May Xuc Tac):";
-        cin >> loaiMay;
+    long tinhChiPhi() {
+        return tinhChiPhiThueMoiMay() + luonxang * 20000;
+    }
+};
 
-        cout << "Nhap cong suat may (m3/h):";
-        cin >> congSuat;
+class MayXucTac {
+private:
+    int luonghoachat;
+    double congsuat;
+    double thoigian;
 
-        if (loaiMay == 1) {
-            cout << "Nhap toc do hao xang (lit/h):";
-            cin >> tocDoHaoXang;
-            cout << "Nhap thoi gian su dung (h):";
-            cin >> thoiGianSuDung;
-            danhSachMayLoc.push_back(new MayXucTac(congSuat, luongHoaChat, thoiGianSuDung));
+public:
+    void nhap() {
+        cout << "Nhap thoi gian hoat dong: ";
+        cin >> thoigian;
+        cout << "Nhap luong hoa chat: ";
+        cin >> luonghoachat;
+        cout << "Nhap cong suat loc cua may: ";
+        cin >> congsuat;
+    }
+
+    void setTgian(double t) {
+        thoigian = t;
+    }
+
+    double getThoiGian() {
+        return this->thoigian;
+    }
+
+    static long long DON_GIA_THUE_MayXucTac;
+
+    float CongSuatThucTe() {
+        if (this->getThoiGian() >= 10) {
+            return congsuat * (luonghoachat / 100) / (this->getThoiGian() / 10);
+        } else {
+            return congsuat * (luonghoachat / 100);
         }
     }
 
-    float luongNuoc, tg;
-    cout << "Nhap luong nuoc (m3):";
-    cin >> luongNuoc;
-    // cin >> tg;
-    float luongNuocLocDuoc = 0;
-    float tongChiPhi = 0;
-
-    for (MayLoc* mayLoc : danhSachMayLoc) {
-        luongNuocLocDuoc += mayLoc->tinhLuongNuoc();
-        tongChiPhi += mayLoc->tinhChiPhi();
+    long tinhChiPhiThueMoiMay() {
+        return DON_GIA_THUE_MayXucTac * static_cast<long>(this->getThoiGian());
     }
 
-    if(luongNuocLocDuoc >= luongNuoc){
-        cout << "Hut duoc het luong nuoc trong ho" << endl;
-    }
-    else{
-        cout << "khong hut het luong nuoc trong ho" << endl;
+    float tinhLuongNuoc() {
+        return this->getThoiGian() * CongSuatThucTe();
     }
 
-    cout << "Tong chi phi su dung cac may loc:" << fixed << setprecision(0) << tongChiPhi <<"dong" << endl;
-
-    for (MayLoc* mayLoc : danhSachMayLoc) {
-        delete mayLoc; // Giai phong bo nho
+    long tinhChiPhi() {
+        return tinhChiPhiThueMoiMay() + luonghoachat * 10000;
     }
+};
+
+long long MayLyTam::DON_GIA_THUE_MayLyTam = 50000;
+long long MayXucTac::DON_GIA_THUE_MayXucTac = 80000;
+
+int main() {
+    int m, n;
+    double nuoc;
+    
+    cout << "Nhap vao luong nuoc trong ao: ";
+    cin >> nuoc;
+    
+    cout << "Nhap so luong may xuc tac: ";
+    cin >> m;
+
+    cout << "Nhap so luong may ly tam: ";
+    cin >> n;
+
+    long long chiphixuctac = 0;
+    long luong_nuoc_xuc_tac = 0;
+    long long chiphilytam = 0;
+    long luong_nuoc_ly_tam = 0;
+
+    for (int i = 1; i <= m; i++) {
+        MayXucTac a;
+        a.nhap();
+        chiphixuctac += a.tinhChiPhi();
+        luong_nuoc_xuc_tac += a.tinhLuongNuoc();
+    }
+
+    for (int i = 1; i <= n; i++) {
+        MayLyTam b;
+        b.nhap();
+        chiphilytam += b.tinhChiPhi();
+        luong_nuoc_ly_tam += b.tinhLuongNuoc();
+    }
+
+    long long tongchiphi = chiphilytam + chiphixuctac;
+    long long tongluongnuoc = luong_nuoc_ly_tam + luong_nuoc_xuc_tac;
+
+    if (tongluongnuoc >= nuoc) {
+        cout << "Ao da duoc loc het" << endl;
+    } else {
+        cout << "Ao chua duoc loc het" << endl;
+    }
+
+    cout << "Tong chi phi la " << tongchiphi;
+
     return 0;
-   }
+}

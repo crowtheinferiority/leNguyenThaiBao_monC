@@ -1,36 +1,39 @@
 #include <iostream>
-using namespace std;
+#include <string>
 
-// Đa hinh động
-class PTIT {
-    public:
-     virtual void show(){
-        cout << "I love PTIT" << endl;
-     }
-};
-
-class UFM : public PTIT {
-    public:
-    void show(){
-        cout << "I love UFM" << endl;
+class DoAn {
+public: // class public
+    virtual void nau() const { //phương thức ảo
+        std::cout << "Dang nau do an thong thuong" << std::endl;
     }
 };
 
-class HANU : public PTIT {
-    public:
-    void show(){
-        cout << "I love HANU" << endl;
+class Pizza : public DoAn { // kế thừa public DoAn cho Pizza 
+public:
+    void nau() const override {
+        std::cout << "Dang lam pizza" << std::endl;
     }
 };
 
-int main (){
-    PTIT*ptit1 = new UFM();
-    PTIT*ptit2 = new HANU();
+class Sushi : public DoAn { // kế thừa public DoAn cho sushi
+public:
+    void nau() const override {
+        std::cout << "Dang lam sushi" << std::endl;
+    }
+};
 
-    ptit1->show(); // I love UFM
-    ptit2 ->show(); // I love HANU
+int main() {
+    DoAn* doAnThuong = new DoAn();
+    DoAn* pizza = new Pizza();
+    DoAn* sushi = new Sushi();
 
-    delete ptit1;
-    delete ptit2;
+    doAnThuong->nau();  // Đang nấu đồ ăn thông thường
+    pizza->nau();       // Đang nướng một chiếc pizza ngon lành
+    sushi->nau();       // Đang chuẩn bị sushi tươi ngon
+
+    delete doAnThuong;
+    delete pizza;
+    delete sushi;
+
     return 0;
 }

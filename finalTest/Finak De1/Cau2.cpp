@@ -1,6 +1,6 @@
 #include <iostream>
 using namespace std;
-class MayXucTac {
+class MayXucTac { 
     private:
     long long congsuat, luonghoaChat, thoiGianHoatDong;
     public:
@@ -15,11 +15,6 @@ class MayXucTac {
     long long tinhChiPhi();
     long long tinhLuongNuoc();
 };
-// MayXucTac:: MayXucTac();
-//congsuat = 0;
-//luonghoaChat = 0;
-//thoigianHoatDong = 0;
-//}
  void MayXucTac::nhap(){
     cout << "Nhap cong suat cua may (m3/h):";
     cin >>congsuat;
@@ -33,7 +28,7 @@ class MayXucTac {
     int chiphithue = DON_GIA_THUE * thoiGianHoatDong;
     int chiphihoaChat = DON_GIA_HOA_CHAT *luonghoaChat;
     return chiphithue + chiphihoaChat;
-   }
+   } 
 
    long long MayXucTac::tinhLuongNuoc(){
     float congsuatThucTe = 0;
@@ -50,6 +45,6 @@ class MayXucTac {
     cout << "Don gia hoa chat:" << MayXucTac::DON_GIA_HOA_CHAT<< endl;
     MayXucTac m;
     m.nhap();
-    cout << "Chi phi su dung may:" << m.tinhChiPhi() << endl;
-    cout << "Luong nuoc loc duoc:" << m.tinhLuongNuoc() << endl;
+    cout << "Chi phi su dung may: " << m.tinhChiPhi() << endl;
+    cout << "Luong nuoc loc duoc: " << m.tinhLuongNuoc() << endl;
    }

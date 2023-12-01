@@ -7,7 +7,7 @@ class Base {
     }
     // HÀm hủy áo
     virtual ~Base(){
-        cout << "Destructor of Base" << endl;
+        cout << "Destructor of Base" << endl;// hủy contracte base
     }
 };
 
@@ -19,12 +19,12 @@ class Derived : public Base {
 
     // Hàm hủy
     ~Derived() {
-        cout << "Destructor of Derived" << endl;
+        cout << "Destructor of Derived" << endl; //hủy derived 
     }
 };
 
 int main (){
-    Base* obj = new Derived(); // Ở đây xảy ra slicing(ngjiax là mất đi 1 phần thông tin) nếu không có hàm hủy áo
+    Base* obj = new Derived(); // Ở đây xảy ra slicing(nghĩa là mất đi 1 phần thông tin) nếu không có hàm hủy áo
     delete obj; //Đối tượng cha chỉ giải phóng phần cảu nó không giải phóng phần của đối tượng con
 
     return 0;

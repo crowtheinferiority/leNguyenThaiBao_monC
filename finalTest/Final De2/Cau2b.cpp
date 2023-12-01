@@ -1,34 +1,51 @@
 #include <iostream>
-using namespace std;
+#include <string>
 
-// Lớp trừu tượng
-class PTIT {
-    public:
-    void displayinfo() {
-        cout << "I love PTIT" << endl;
+// Lớp trừu tượng đại diện cho một loại đồ ăn
+class MonAn {
+public:
+    // Phương thức thuần ảo để mô tả cách nấu ăn ( chú í virtual)
+    virtual void nauAn() const = 0;
+
+    // Phương thức thông thường
+    void hienThiThongTin() const {
+        std::cout << "Đây là một loại đồ ăn." << std::endl;
     }
 };
- // Lớp con kế thừa từ lớp trừu tượng
- class UFM : public PTIT {
-    public:
-    void show(){
-        cout << "I love UFM" << endl;
+
+// Lớp con kế thừa từ lớp trừu tượng
+class BanhMi : public MonAn {
+public:
+    // Triển khai phương thức thuần ảo
+    void nauAn() const override {
+        std::cout << "Đang làm bánh mì ngon." << std::endl;
     }
- 
+};
 
- void display(){
-    cout << "I love HNU" << endl;
- }
- };
- 
- int main (){
-    // Không thể tạo đói tượng từ lớp tựu trường
-    // PTIT*ptit = new PTIT(); // Lỗi
+// Lớp con khác kế thừa từ lớp trừu tượng
+class Sushi : public MonAn {
+public:
+    // Triển khai phương thức thuần ảo
+    void nauAn() const override {
+        std::cout << "Đang làm sushi tươi ngon." << std::endl;
+    }
+};
 
-    UFM ufm;
-    ufm.show();
-    ufm.display();
-    ufm.displayinfo();
+int main() {
+    // Không thể tạo đối tượng từ lớp trừu tượng
+    // MonAn* monAn = new MonAn(); // Lỗi
+
+    BanhMi banhMi;
+    Sushi sushi;
+
+    // Gọi phương thức thông thường
+    banhMi.hienThiThongTin();
+
+    // Gọi phương thức thuần ảo qua đối tượng con
+    banhMi.nauAn(); // Đang làm bánh mì ngon.
+
+    sushi.hienThiThongTin();
+    sushi.nauAn(); // Đang làm sushi tươi ngon.
 
     return 0;
- }
+}
