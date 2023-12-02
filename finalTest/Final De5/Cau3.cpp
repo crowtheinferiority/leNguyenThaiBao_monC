@@ -1,121 +1,152 @@
 #include <iostream>
 #include <vector>
-#include <iomanip>
 using namespace std;
-// Abstract base class
+
+// Lớp cơ sở Sap
 class Sap {
-    protected:
-    int sapID;
-    double dienTich;
+protected:
+    int _stt;
+    float _dt;
+    long _doanhThu;
 
-    public:
-    virtual double tinhTienThueSap() = 0;
-    virtual double tinhThueDoanhThu() = 0;
+public:
+    static long DON_GIA_THUE;
+
+    // Hàm ảo để tính tiền thuê
+    virtual long tinhTienThue() {
+        return DON_GIA_THUE * this->_dt;
+    }
+
+    // Hàm ảo để tính thuế doanh thu
+    virtual long tinhThueDoanhThu() = 0;
+
+    // Hàm ảo để tính tổng tiền
+    virtual long tinhTongTien() = 0;
+
+    // Hàm ảo để nhập thông tin
+    virtual void nhapThongTin() {
+        cin >> this->_stt >> this->_dt >> this->_doanhThu;
+    }
+
+    // Destructor ảo
+    virtual ~Sap() {
+        this->_stt = 0;
+        this->_dt = 0;
+        this->_doanhThu = 0;
+    }
 };
 
-// Derived class for ThucPham saps
-class ThucPham : public Sap {
-    private:
-    double tienSuDungDichLAnh;
-    double doanhthu;
-    public:
-    ThucPham(int id, double dt, double tien, double doanhThu) {
-        sapID = id;
-        dienTich = dt;
-        tienSuDungDichLAnh = tien;
-        doanhthu = doanhThu;
+long Sap::DON_GIA_THUE = 40000000;
+
+// Lớp SapThucPham kế thừa từ Sap
+class SapThucPham : public Sap {
+private:
+    long _phiDongLanh;
+
+public:
+    static float PHAN_TRAM_THUE_SAP_THUC_PHAM;
+
+    // Tính thuế doanh thu cho SapThucPham
+    long tinhThueDoanhThu() {
+        return (float)PHAN_TRAM_THUE_SAP_THUC_PHAM * this->_doanhThu;
     }
-    double tinhTienThueSap() {
-        return dienTich * 40000000;
+
+    // Tính tổng tiền cho SapThucPham
+    long tinhTongTien() {
+        return this->_phiDongLanh + this->tinhThueDoanhThu() + this->tinhTienThue();
     }
-    double tinhThueDoanhThu() {
-        return doanhthu * 0.05;
+
+    // Nhập thông tin cho SapThucPham
+    void nhapThongTin() {
+        Sap::nhapThongTin();
+        cin >> _phiDongLanh;
     }
 };
 
-// Derived class for QuanAo saps
-class QuanAo : public Sap {
-    private:
-    double doanhthu;
-    public:
-    QuanAo(int id, double dt, double doanhThu) {
-        sapID = id;
-        dienTich = dt;
-        doanhthu = doanhThu;
-    }
-    double tinhTienThueSap() {
-        return dienTich * 40000000;
-    }
-    double tinhThueDoanhThu() {
-        return doanhthu * 0.1;
+float SapThucPham::PHAN_TRAM_THUE_SAP_THUC_PHAM = 0.05;
+
+// Lớp SapQuanAo kế thừa từ Sap
+class SapQuanAo : public Sap {
+public:
+    static float PHAN_TRAM_THUE_SAP_QUAN_AO;
+
+    // Tính thuế doanh thu cho SapQuanAo
+    long tinhThueDoanhThu() {
+        return (float)PHAN_TRAM_THUE_SAP_QUAN_AO * this->_doanhThu;
     }
 
+    // Tính tổng tiền cho SapQuanAo
+    long tinhTongTien() {
+        return this->tinhThueDoanhThu() + this->tinhTienThue();
+    }
 };
 
-// Derived class of TrangSuc saps
-class TrangSuc : public Sap {
-    private:
-    double doanhThu;
-    public:
-    TrangSuc(int id, double dt, double doanhthu) {
-        sapID = id;
-        dienTich = dt;
-        doanhThu = doanhthu;
-    }
-    double tinhTienThueSap() {
-        return dienTich * 40000000;
-    }
-    double tinhThueDoanhThu() {
-        if(doanhThu < 100000000) {
-            return doanhThu * 0.2;
-        }else {
-            return doanhThu * 0.3;
+float SapQuanAo::PHAN_TRAM_THUE_SAP_QUAN_AO = 0.1;
+
+// Lớp SapTrangSuc kế thừa từ Sap
+class SapTrangSuc : public Sap {
+public:
+    static long GIOI_HAN_DOANH_THU;
+    static float PHAN_TRAM_THUE_DUOI_GION_HAN;
+    static float PHAN_TRAM_THUE_TREN_GION_HAN;
+
+    // Tính thuế doanh thu cho SapTrangSuc
+    long tinhThueDoanhThu() {
+        if (this->_doanhThu < GIOI_HAN_DOANH_THU) {
+            return PHAN_TRAM_THUE_DUOI_GION_HAN * this->_doanhThu;
+        } else {
+            return PHAN_TRAM_THUE_TREN_GION_HAN * this->_doanhThu;
         }
     }
+
+    // Tính tổng tiền cho SapTrangSuc
+    long tinhTongTien() {
+        return this->tinhThueDoanhThu() + this->tinhTienThue();
+    }
 };
-int main (){
-    vector<Sap*> danhSachSap;
-    // Nhập vài danh sách thong tin cac sap duoc thue 
-    int n;
-    cout << "Nhap so luong sap:";
-    cin >> n;
-    for (int i = 0; i < n; i++) {
-        int loaiSap;
-        cout << "Nhap loai sap (1 = Thuc pham, 2 = Quan ao, 3 = Trang suc):";
-        cin >> loaiSap;
-        int id;
-        double dt;
-        double doanhthu;
 
-        cout << "Nhap so thu tu sap:";
-        cin >> id;
-        cout << "Nhap dien tich sap:";
-        cin >> dt;
-        cout << "Nhap doanh thu sap loai " << loaiSap << ": ";
-        cin >> doanhthu;
+long SapTrangSuc::GIOI_HAN_DOANH_THU = 100000000;
+float SapTrangSuc::PHAN_TRAM_THUE_DUOI_GION_HAN = 0.2;
+float SapTrangSuc::PHAN_TRAM_THUE_TREN_GION_HAN = 0.3;
 
-        if(loaiSap == 1) {
-            double tienSuDungDichLanh;
-            cout << "Nhap so tien su dung dich lanh:";
-            cin >> tienSuDungDichLanh;
-            danhSachSap.push_back(new ThucPham(id, dt, tienSuDungDichLanh, doanhthu));
-        }else if(loaiSap == 2) {
-            danhSachSap.push_back(new QuanAo(id, dt, doanhthu));
-        }else if (loaiSap == 3) {
-            danhSachSap.push_back(new TrangSuc(id, dt, doanhthu));
+// Lớp QuanLyDanhSach quản lý danh sách các đối tượng Sap
+class QuanLyDanhSach {
+private:
+    vector<Sap*> _ds;
+
+public:
+    // Nhập thông tin cho từng đối tượng trong danh sách
+    void nhapThongTin() {
+        cout << "Nhap so luong sap duoc thue:";
+        int n;
+        cin >> n;
+        for (int i = 0; i < n; i++) {
+            int choice;
+            cout << "1-Sap Thuc Pham, 2-SapQuanAo, 3-SapTrangSuc\n";
+            cin >> choice;
+            Sap* p = NULL;
+            if (choice == 1) {
+                p = new SapThucPham();
+            } else if (choice == 2) {
+                p = new SapQuanAo();
+            } else if (choice == 3) {
+                p = new SapTrangSuc();
+            } else {
+                cout << "Nhap sai! Nhap lai!\n";
+                i--;
+                continue;
+            }
+            this->_ds.push_back(p);
+            this->_ds[i]->nhapThongTin();
         }
     }
-    // Tính tổng số tiền các sap được thuê phải đống hàng năm
-    double tongTien = 0;
 
-    for (int i = 0; i < danhSachSap.size(); i++) {
-        tongTien += danhSachSap[i]->tinhTienThueSap() + danhSachSap[i]->tinhThueDoanhThu();
-
+    // Tính tổng tiền của tất cả đối tượng trong danh sách
+    long tinhTongTien() {
+        long sum = 0;
+        for (int i = 0; i < this->_ds.size(); i++) {
+            sum += this->_ds[i]->tinhTongTien();
+        }
+        return sum;
     }
-    cout << "Tong so tien cac sap duoc thue phai dong hang nam: " << fixed << setprecision(0) << tongTien << "dong" << endl;
-    // Giải phóng bộ nhớ
-    for (int i = 0; i < danhSachSap.size(); i++) {
-        delete danhSachSap[i];
-    }
-    return 0;
-}
+};

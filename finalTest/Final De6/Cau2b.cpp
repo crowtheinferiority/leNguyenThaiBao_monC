@@ -1,172 +1,160 @@
 #include <iostream>
 #include <vector>
-#include<iomanip>
-#include<fstream>
+
 using namespace std;
 
+// Lớp cơ sở cho mọi bệnh nhân
 class BenhNhan {
-private:
-    int msbn;
-    int ngayNhapVien;
-    int ngayXuatVien;
-    string loaiPhong;
-    double phiKhamMoiNgay;
-
+protected:
+    int MSBN; // Mã số bệnh nhân
 public:
-    BenhNhan(int msbn, int ngayNhapVien, int ngayXuatVien, string loaiPhong, double phiKhamMoiNgay) {
-        this->msbn = msbn;
-        this->ngayNhapVien = ngayNhapVien;
-        this->ngayXuatVien = ngayXuatVien;
-        this->loaiPhong = loaiPhong;
-        this->phiKhamMoiNgay = phiKhamMoiNgay;
-    }
-	void setMSBN(int res){
-		msbn = res;
-	}
-    int getMSBN() const {
-        return msbn;
+    virtual void nhap(istream& is) {
+        is >> this->MSBN;
     }
 
-    int getNgayNhapVien() {
-        return ngayNhapVien;
+    virtual void capNhatNgayXuatVien(int ngay);
+    virtual bool getTrangThai() {
+        return true;
     }
 
-    int getNgayXuatVien() {
-        return ngayXuatVien;
+    virtual long tinhTien() {
+        return 0;
     }
 
-    string getLoaiPhong() {
-        return loaiPhong;
-    }
+    virtual void capNhatVienPhi() {
 
-    double getPhiKhamMoiNgay() {
-        return phiKhamMoiNgay;
     }
-
-    double tinhVienPhi() {
-        int soNgayNamVien = ngayXuatVien - ngayNhapVien;
-        double donGiaPhong = 0;
-        if (loaiPhong == "C") {
-            donGiaPhong = 600000;
-        } else if (loaiPhong == "B") {
-            donGiaPhong = 900000;
-        } else if (loaiPhong == "A") {
-            donGiaPhong = 1400000;
-        }
-        if(donGiaPhong == 0){
-        	return phiKhamMoiNgay; 	
-		}
-        return soNgayNamVien * (phiKhamMoiNgay + donGiaPhong);
-    }
-    void setNgayXuatVien(int ngay){
-    	ngayXuatVien = ngay;
-	}
-	
-	
 };
 
-class BenhVien {
+// Lớp bệnh nhân ngoại trú kế thừa từ lớp cơ sở BenhNhan
+class BenhNhanNgoaiTru : public BenhNhan {
 private:
-	int soBenhNhanNoiTru, soBenhNhanNgoaiTru;
+    long _vienPhi; // Viện phí bệnh nhân ngoại trú
 public:
-    vector<BenhNhan> danhSachBenhNhan;
-    BenhVien() : soBenhNhanNoiTru(0), soBenhNhanNgoaiTru(0) {}
+    BenhNhanNgoaiTru(int id) {
+        this->MSBN = id;
+    }
 
-    void themBenhNhan(BenhNhan benhNhan) {
-        danhSachBenhNhan.push_back(benhNhan);
-        if (benhNhan.getNgayXuatVien() == -1) {
-            soBenhNhanNoiTru++;
+    virtual void nhap(istream& is) {
+        is >> this->_vienPhi;
+    }
+
+    long tinhTien() {
+        return this->_vienPhi;
+    }
+
+    void capNhatVienPhi(long Tien) {
+        this->_vienPhi += Tien;
+    }
+};
+
+// Lớp bệnh nhân nội trú kế thừa từ lớp cơ sở BenhNhan
+class BenhNhanNoiTru : public BenhNhan {
+private:
+    int _loaiPhong;             // a=1, b=2, c=3
+    int _ngayBatDauNamVien;
+    int _soNgayNamVien;
+    bool _daXuatVien;           // true: đã, false: chưa
+    long _phiKhamBenhMoiNgay;
+public:
+    static long A;
+    static long B;
+    static long C;
+
+    void nhap(istream& is) {
+        is >> this->_phiKhamBenhMoiNgay;
+        char c;
+        is >> c;
+        this->_loaiPhong = c - 64;
+    }
+
+    BenhNhanNoiTru(int MaSo, int ngay, long tien, char c) {
+        this->MSBN = MaSo;
+        this->_ngayBatDauNamVien = ngay;
+        this->_phiKhamBenhMoiNgay = tien;
+        this->_loaiPhong = c - 64;
+        this->_daXuatVien = false;
+    }
+
+    void capNhatNgayXuatVien(int ngay) {
+        this->_soNgayNamVien = ngay - this->_ngayBatDauNamVien;
+        this->_daXuatVien = true;
+    }
+
+    long tinhTien() {
+        if (this->_loaiPhong == 1) {
+            return this->A * (this->_soNgayNamVien + this->_phiKhamBenhMoiNgay);
+        } else if (this->_loaiPhong == 2) {
+            return this->B * (this->_soNgayNamVien + this->_phiKhamBenhMoiNgay);
+        } else if (this->_loaiPhong == 3) {
+            return this->C * (this->_soNgayNamVien + this->_phiKhamBenhMoiNgay);
         } else {
-            soBenhNhanNgoaiTru++;
+            return 0;
         }
-    }
-
-
-    double tinhTongVienPhi() {
-        double tongVienPhi = 0;
-
-        for (int i = 0; i < danhSachBenhNhan.size(); i++) {
-        	tongVienPhi += danhSachBenhNhan[i].tinhVienPhi();
-        }
-
-        return tongVienPhi;
-    }
-    
-    
-    void hienThiThongKe() {
-        cout << "BANG THONG KE VIEN PHI\n";
-        cout << setw(5) << "MSBN" << setw(15) << "Ngay Nhap Vien" << setw(15) << "Ngay Xuat Vien"
-             << setw(10) << "Loai Phong" << setw(20) << "Phi Kham Moi Ngay" << setw(20) << "Vien Phi\n";
-        cout << setfill('-') << setw(80) << "-" << setfill(' ') << endl;
-
-        for (int i = 0; i < danhSachBenhNhan.size(); i++) {
-            cout << setw(5) << danhSachBenhNhan[i].getMSBN()
-                 << setw(15) << danhSachBenhNhan[i].getNgayNhapVien()
-                 << setw(15) << (danhSachBenhNhan[i].getNgayXuatVien() == -1 ? "" : to_string(danhSachBenhNhan[i].getNgayXuatVien()))
-                 << setw(10) << danhSachBenhNhan[i].getLoaiPhong()
-                 << setw(20) << danhSachBenhNhan[i].getPhiKhamMoiNgay()
-                 << setw(20) <<fixed << setprecision(0) << danhSachBenhNhan[i].tinhVienPhi() << endl;
-        }
-
-        cout << setfill('-') << setw(80) << "-" << setfill(' ') << endl;
-        cout << setw(65) << "TONG VIEN PHI" << setw(15) << tinhTongVienPhi() << endl;
-        cout << "So benh nhan noi tru: " << soBenhNhanNoiTru << endl;
-    	cout << "So benh nhan ngoai tru: " << soBenhNhanNgoaiTru << endl;
     }
 };
 
-    
+// Khởi tạo giá trị cho các biến static trong lớp BenhNhanNoiTru
+long BenhNhanNoiTru::A = 1400000;
+long BenhNhanNoiTru::B = 900000;
+long BenhNhanNoiTru::C = 600000;
 
-int main() {
-    BenhVien benhVien;
-    
-    ifstream file("res.txt"); // tạo file .txt theo máy tính trong cùng mục lưu file bài này rồi chạy 
+// Lớp quản lý danh sách bệnh nhân
+class DanhSachBenhNhan {
+    vector<BenhNhan*> _ds; // Danh sách bệnh nhân
+public:
+    void nhap() {
+        freopen("input.log", "rt", stdin);
+        int ngay = 0;
 
-    if (file.is_open()) {
-        int ngay, msbn;
-        string hoatDong;
-        double phiKham;
+        while (!cin.eof()) {
+            cin >> ngay;
+            int MaSo = 0;
+            cin >> MaSo;
+            cin.ignore();
+            cin.clear();
+            string s = "";
+            cin >> s;
+            BenhNhan* p = NULL;
 
-        while (file >> ngay >> msbn >> hoatDong) {
-            if (hoatDong == "KB") {
-                file >> phiKham;
+            if (s == "KB") {
+                long Tien = 0;
+                cin >> Tien;
 
-                BenhNhan benhNhan(msbn, ngay, ngay, "", phiKham);
-                benhVien.themBenhNhan(benhNhan);
-            } else if (hoatDong == "NV") {
-                double phiKhamMoiNgay;
-                string loaiPhong;
-
-                file >> phiKhamMoiNgay >> loaiPhong;
-
-                BenhNhan benhNhan(msbn, ngay, -1, loaiPhong, phiKhamMoiNgay);
-                benhVien.themBenhNhan(benhNhan);
-            } else if (hoatDong == "XV") {
-                for (int i = 0; i < benhVien.danhSachBenhNhan.size(); i++) {
-                    if (benhVien.danhSachBenhNhan[i].getMSBN() == msbn && benhVien.danhSachBenhNhan[i].getNgayXuatVien() == -1) {
-                        benhVien.danhSachBenhNhan[i].setNgayXuatVien(ngay);
-                        benhVien.danhSachBenhNhan[i].getNgayXuatVien() == 0;
-                        break;
+                if (MaSo <= this->_ds.size() - 1) {
+                    this->_ds[MaSo - 1]->capNhatVienPhi(Tien);
+                } else {
+                    p = new BenhNhanNgoaiTru(MaSo);
+                    this->_ds.push_back(p);
+                }
+            } else if (s == "NV") {
+                long Tien = 0;
+                cin >> Tien;
+                char c;
+                cin >> c;
+                p = new BenhNhanNoiTru(MaSo, ngay, Tien, c);
+                this->_ds.push_back(p);
+            } else if (s == "XV") {
+                this->_ds[MaSo - 1]->capNhatNgayXuatVien(ngay);
+            } else if (s == "TKVP") {
+                for (int i = 0; i < this->_ds.size(); i++) {
+                    if (dynamic_cast<BenhNhanNgoaiTru*>(this->_ds[i]) == NULL) {
+                        if (this->_ds[i]->getTrangThai() == false) {
+                            this->_ds[i]->capNhatNgayXuatVien(ngay);
+                        }
                     }
                 }
-            } else if (hoatDong == "TKVP") {
-                for (int i = 0; i < benhVien.danhSachBenhNhan.size(); i++) {
-                    if (benhVien.danhSachBenhNhan[i].getMSBN() != msbn && benhVien.danhSachBenhNhan[i].getNgayXuatVien() == -1) {
-                        benhVien.danhSachBenhNhan[i].setNgayXuatVien(ngay);
-                        break;
-                    }
-                }
-                break;
             }
         }
 
-        file.close();
-
-        benhVien.hienThiThongKe();
-    } 
-	else{
-        cout << "Cannot open file." << endl;
+        freopen("CON", "rt", stdin);
     }
 
-    return 0;
-}
+    long tinhTongTienVienPhi() {
+        long sum = 0;
+        for (int i = 0; i < this->_ds.size(); i++) {
+            sum += this->_ds[i]->tinhTien();
+        }
+        return sum;
+    }
+};

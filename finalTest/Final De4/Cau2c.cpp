@@ -1,74 +1,36 @@
-#include <iostream>
-using namespace std;
-class IFace {
-    public:
-    virtual void show()=0;
-    virtual IFace* clone()=0;
-    virtual ~IFace(){
-
-    }
-};
-
-class Face : public IFace {
-    private:
-    string shape;
-    protected:
-    string getShape(){
-        return shape;
-    }
-    public:
-    Face(string sh) : shape(sh) {
-    }
-    virtual void show() {
-        cout << "Shape:" << shape << endl;
-    }
-    IFace* clone() override {
-        return new Face(*this);
-    }
-};
-class EyedFace : public Face {
-    private:
-    int eyes;
-    public:
-    static int count;
-    EyedFace(string sh, int e) : Face(sh), eyes(e) {
-        count++;
-    }
-
-    ~EyedFace(){
-        count--;
-
-    }
-
-    void show() override {
-        cout << "Shape:" << getShape() << ",Eyes:" << eyes << endl;
-    }
-
-IFace* clone() override {
-    return new EyedFace(*this);
-}
-    static int getCount(){
-        return count;
-
-    }
-};
+//cải tạo lại cho chương trình hết lỗi
 void testFace(IFace* fc) {
-    IFace** a = new IFace * [3];
-    a[0] = fc;
-    a[1] = fc->clone();
-    a[2] = fc->clone();
-    for(int i = 0; i < 3; i++){
-        a[i]->show();
-        delete a[i];
-    }
-    cout << "The same 3 lines?" << endl;
-    delete []a;
-}
-int EyedFace::count = 0;
+			IFace* a[3] = { fc, fc->clone(), fc->clone() };
+			for(int i=0; i<3; i++) {
+				a[i]->show();
+			}
+			cout << “The same 3 lines?”;
+            //giải phóng bộ nhớ
+			delete a[1];
+			delete a[2];
+			return;
+		}
+        class Eyed: public IFace{
+            private:
 
-int main (){
-    Face fc1("Rectangle");
-    testFace(&fc1);
-    cout << "So doi tuong trong bo nho : " << EyedFace::getCount() << endl;
-    return 0;
-}
+			static int COUNT_OBJECT;
+            string shape;
+            int eyes;
+            public:
+			EyedFace(const string& sh, const int& e) : shape (sh), eyes(e){
+				.....
+				COUNT_OBJECT++;
+			}
+			~EyedFace(){
+				........
+				COUNT_OBJECT--;
+			}
+		};
+		// trong file .cpp
+		int EyedFace::COUNT_OBJECT=0;
+		// trong main()
+		int main(){
+			........
+			cout<<"So doi tuong thuoc EyedFace"<<EyedFace::COUNT_OBJECT<<endl;
+			return 0;
+		}

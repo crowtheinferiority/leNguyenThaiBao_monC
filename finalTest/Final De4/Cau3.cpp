@@ -1,141 +1,198 @@
 #include <iostream>
 #include <vector>
-#include <iomanip>
 using namespace std;
 
-class Contract {
+// Class Phone_Fee định nghĩa cước điện thoại
+class Phone_Fee {
+private:
+    float _time;
+
+public:
+    static long PRICE_PHONE;
+    long calFee() {
+        return PRICE_PHONE * this->_time;
+    }
+};
+
+long Phone_Fee::PRICE_PHONE = 1000;
+
+// Class Internet_Fee định nghĩa cước Internet
+class Internet_Fee {
+private:
+    long _luongTruyCap;
+
+public:
+    static long PRICE_INTERNET;
+    long calFee() {
+        return PRICE_INTERNET * this->_luongTruyCap;
+    }
+};
+
+long Internet_Fee::PRICE_INTERNET = 200;
+
+// Class Customer định nghĩa thông tin khách hàng
+class Customer {
+private:
+    string FullName;
+    string ID;
+    string Address;
+
+public:
+    void dangKy() {
+        cout << "Nhap ho va ten:";
+        cin.ignore();
+        getline(cin, this->FullName);
+
+        cout << "Nhap so chung minh:";
+        cin >> this->ID;
+
+        cin.ignore();
+        cout << "Nhap dia chi:";
+        getline(cin, this->Address);
+    }
+};
+
+// Class Cost là lớp cơ sở cho các loại cước khác nhau
+class Cost {
 protected:
-    string fullName;
-    string idNumber;
-    string address;
+    Phone_Fee _phone_fee;
 
 public:
-    Contract(string name, string id, string addr) : fullName(name), idNumber(id), address(addr) {}
-
-    virtual ~Contract() {}
-
-    string getFullName() const {
-        return fullName;
-    }
-
-    string getIdNumber() const {
-        return idNumber;
-    }
-
-    string getAddress() const {
-        return address;
-    }
-
-    virtual double calculateTotalBill() const = 0;
-    virtual void displayContractInfo() const = 0;
+    static long VAT;
+    virtual long calFee() = 0;
 };
 
-class BasicContract : public Contract {
+long Cost::VAT = 0;  // Define static member outside the class
+
+// Class Basic kế thừa từ Cost, định nghĩa cước cơ bản
+class Basic : public Cost {
 private:
-    int callTime; //thời gian gọi
-    double callRate; //tiền gọi(1000d/h)
-    int dataUsage;//internet sử dụng (MB)
-    double dataRate;//tiền inrternet(200d/MB)
+    Internet_Fee _internet_fee;
 
 public:
-    BasicContract(string name, string id, string addr, int time, double rate, int usage, double data_rate)
-        : Contract(name, id, addr), callTime(time), callRate(rate), dataUsage(usage), dataRate(data_rate) {}
-    int getCallTime() const {
-        return callTime;
-    }
-
-    double getCallRate() const {
-        return callRate;
-    }
-
-    int getDataUsage() const{
-        return dataUsage;
-    }
-
-    double getDataRate() const{
-        return dataRate;
-    }
-    double calculateTotalBill() const override {
-        double callCost = callTime * callRate;
-        double dataCost = dataUsage * dataRate;
-        return callCost + dataCost + (callCost + dataCost)*0.1;
-    }
-
-    void displayContractInfo() const override {
-        cout << "Basic Contract Information:\n";
-        cout << "Customer Name: " << getFullName() << "\n";
-        cout << "Customer ID: " << getIdNumber() << "\n";
-        cout << "Customer Address: " << getAddress() << "\n";
+    long calFee() {
+        return this->_phone_fee.calFee() + this->_internet_fee.calFee() + 0.1 * VAT;
     }
 };
 
-class DataFreeContract : public BasicContract {
+// Class Data_Fee kế thừa từ Cost, định nghĩa cước dữ liệu
+class Data_Fee : public Cost {
 private:
-    int dataFreeLimit;
+    long _luongTruyCap;
 
 public:
-    DataFreeContract(string name, string id, string addr, int time, double rate, int usage, double data_rate, int limit)
-        : BasicContract(name, id, addr, time, rate, usage, data_rate), dataFreeLimit(limit) {}
+    static long NGUONG_MIEN_PHI;
+    static long CUOC_THUE_BAO;
 
-    double calculateTotalBill() const override {
-        double totalBill = BasicContract::calculateTotalBill();
-        return (getDataUsage() > dataFreeLimit) ? totalBill + (getDataUsage() - dataFreeLimit) * getDataRate() : totalBill;
+    long calFee() {
+        long phone_fee = this->_phone_fee.calFee();
+        long internet_fee = 0;
+
+        if (_luongTruyCap <= NGUONG_MIEN_PHI) {
+            internet_fee = CUOC_THUE_BAO;
+        } else {
+            Internet_Fee temp;
+            temp.PRICE_INTERNET = _luongTruyCap - NGUONG_MIEN_PHI;
+            internet_fee = CUOC_THUE_BAO + temp.calFee();
+        }
+
+        return phone_fee + internet_fee;
     }
 };
 
-class DataFixContract : public BasicContract {
-private:
-    double fixedCost;
+// Khởi tạo giá trị cho các biến static của Data_Fee
+long Data_Fee::NGUONG_MIEN_PHI = 100;
+long Data_Fee::CUOC_THUE_BAO = 50;
 
+// Class Data_Fix kế thừa từ Cost, định nghĩa cước dữ liệu cố định
+class Data_Fix : public Cost {
 public:
-    DataFixContract(string name, string id, string addr, int time, double rate, int usage, double data_rate, double cost)
-        : BasicContract(name, id, addr, time, rate, usage, data_rate), fixedCost(cost) {}
-
-    double calculateTotalBill() const override {
-        double totalBill = BasicContract::calculateTotalBill();
-        return totalBill - (totalBill * 0.1) + fixedCost;
+    static long MUC_CO_DINH;
+    long calFee() {
+        return (float)0.9 * (this->_phone_fee.calFee()) + MUC_CO_DINH;
     }
 };
 
-class Company {
+long Data_Fix::MUC_CO_DINH = 1000000;
+
+// Class Contract định nghĩa hợp đồng
+class Contract {
 private:
-    vector<Contract*> contracts;
+    Customer _cus;
+    Cost* _cost;
 
 public:
-    ~Company() {
-        for (Contract* contract : contracts) {
-            delete contract;
+    void dangKy() {
+        this->_cus.dangKy();
+        cout << "Chon goi cuoc: 1-Basic, 2-Data_Fee, 3-Data_Fix:\n";
+        int choice;
+        cin >> choice;
+
+        if (choice == 1) {
+            this->_cost = new Basic();
+        } else if (choice == 2) {
+            this->_cost = new Data_Fee();
+        } else if (choice == 3) {
+            this->_cost = new Data_Fix();
+        } else {
+            this->_cost = new Basic();
         }
     }
 
-    void addContract(Contract* contract) {
-        contracts.push_back(contract);
+    void thongBao() {
+        cout << "Khach hang:\n";
+        // Giả sử có một hàm xuat() trong lớp Customer để hiển thị thông tin khách hàng
+        // this->_cus.xuat();
+        cout << "Tien cuoc goi cuoc la:" << this->_cost->calFee();
+        cout << endl;
     }
 
-    void calculateBill() const {
-        for (const Contract* contract : contracts) {
-            contract->displayContractInfo();
-            cout << "Total Bill: " << fixed << setprecision(0) << contract->calculateTotalBill() << " VND\n";
-            cout << "---------------------------\n";
+    ~Contract() {
+        if (this->_cost) {
+            delete this->_cost;
+            this->_cost = NULL;
         }
     }
 };
 
+// Class QuanLy quản lý danh sách các hợp đồng
+class QuanLy {
+    vector<Contract*> _ds;
+
+public:
+    void dangKy() {
+        int n;
+        cout << "Nhap luong hop dong:";
+        cin >> n;
+
+        for (int i = 0; i < n; i++) {
+            Contract* c = new Contract();
+            c->dangKy();
+            this->_ds.push_back(c);
+        }
+    }
+
+    void thongBao() {
+        for (int i = 0; i < this->_ds.size(); i++) {
+            this->_ds[i]->thongBao();
+        }
+    }
+
+    ~QuanLy() {
+        for (int i = 0; i < this->_ds.size(); i++) {
+            if (this->_ds[i]) {
+                delete this->_ds[i];
+            }
+        }
+        this->_ds.clear();
+    }
+};
+
+// Hàm main chính của chương trình
 int main() {
-    Company company;
-
-    // tạo thông tin
-    BasicContract* contract1 = new BasicContract("Hau", "123456789", "97 Man Thien", 100, 1000, 500, 200);
-    DataFreeContract* contract2 = new DataFreeContract("Hay", "987654321", "97 Man Thien", 200, 1000, 800, 200, 500);
-    DataFixContract* contract3 = new DataFixContract("Ho", "456789123", "97 Man Thien", 50, 1000, 180, 200, 1000000);
-
-    //Add vào company
-    company.addContract(contract1);
-    company.addContract(contract2);
-    company.addContract(contract3);
-
-    // xuất Bill
-    company.calculateBill();
+    QuanLy ql;
+    ql.dangKy();
+    ql.thongBao();
 
     return 0;
 }
