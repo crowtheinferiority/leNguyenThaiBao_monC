@@ -14,7 +14,7 @@ class MayXucTac {
     void nhap();
     long long tinhChiPhi();
     long long tinhLuongNuoc();
-};
+}; 
  void MayXucTac::nhap(){
     cout << "Nhap cong suat cua may (m3/h):";
     cin >>congsuat;

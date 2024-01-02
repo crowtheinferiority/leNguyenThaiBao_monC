@@ -9,7 +9,7 @@ public:
 
     // Phương thức thông thường
     void hienThiThongTin() const {
-        std::cout << "Đây là một loại đồ ăn." << std::endl;
+        std::cout << "Day la mot loai do an." << std::endl;
     }
 };
 

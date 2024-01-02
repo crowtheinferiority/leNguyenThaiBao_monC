@@ -1,7 +1,7 @@
 //cải tạo lại cho chương trình hết lỗi
 void testFace(IFace* fc) {
 			IFace* a[3] = { fc, fc->clone(), fc->clone() };
-			for(int i=0; i<3; i++) {
+			for(int i=0; i<3; i++) { //truy xuất và hiển thị đến từng thành phần trong eyeface
 				a[i]->show();
 			}
 			cout << “The same 3 lines?”;
@@ -10,7 +10,7 @@ void testFace(IFace* fc) {
 			delete a[2];
 			return;
 		}
-        class Eyed: public IFace{
+        class Eyed: public IFace{ //class Eyed được kế thừa từ public IFace.
             private:
 
 			static int COUNT_OBJECT;

@@ -28,4 +28,4 @@ int main (){
     delete obj; //Đối tượng cha chỉ giải phóng phần cảu nó không giải phóng phần của đối tượng con
 
     return 0;
-}
+}   
